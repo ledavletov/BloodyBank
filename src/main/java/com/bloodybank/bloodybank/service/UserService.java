@@ -45,4 +45,12 @@ public class UserService {
         }
         throw new UserNotFoundException(email);
     }
+
+    public String getUser(String email) throws UserNotFoundException {
+        Optional<User> byEmail = userRepository.findByEmail(email);
+        if(byEmail.isPresent()){
+            return byEmail.get().toString();
+        }
+        throw new UserNotFoundException(email);
+    }
 }
