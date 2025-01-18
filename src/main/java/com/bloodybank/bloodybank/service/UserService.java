@@ -53,4 +53,16 @@ public class UserService {
         }
         throw new UserNotFoundException(email);
     }
+
+    public int incrementBloodCount(String email) throws UserNotFoundException {
+        Optional<User> byEmail = userRepository.findByEmail(email);
+        if(byEmail.isPresent()){
+            User user = byEmail.get();
+            int count = user.getCount();
+            user.setCount(++count);
+            userRepository.save(user);
+            return count;
+        }
+        throw new UserNotFoundException(email);
+    }
 }

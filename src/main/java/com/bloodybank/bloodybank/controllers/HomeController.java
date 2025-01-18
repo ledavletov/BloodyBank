@@ -13,6 +13,7 @@ public class HomeController {
 
     private UserService userService;
 
+
     @GetMapping("/profile/{email}")
     public ResponseEntity<String> profile(@PathVariable String email){
         try {
@@ -20,7 +21,16 @@ public class HomeController {
         } catch (UserNotFoundException e) {
             return ResponseEntity.badRequest().body(e.getMessage());
         }
+    }
 
+    @GetMapping("/donate/{email}")
+    public ResponseEntity<String> donate(@PathVariable String email){
+        try {
+            int i = userService.incrementBloodCount(email);
+            return ResponseEntity.ok(String.valueOf(i));
+        } catch (UserNotFoundException e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
+        }
     }
 
 }

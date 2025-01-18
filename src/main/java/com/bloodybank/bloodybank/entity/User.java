@@ -22,4 +22,6 @@ public class User {
     @ManyToOne
     @JoinColumn(name = "blood_id")
     private Blood blood_type;
+
+    private int count;
 }
