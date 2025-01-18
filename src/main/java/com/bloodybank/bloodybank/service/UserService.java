@@ -36,7 +36,7 @@ public class UserService {
         return bloodRepository.findByName(name).orElseThrow(() -> new NoSuchBloodType("There is no such blood type as " + name));
     }
 
-    public boolean login(String email, String password) throws Exception {
+    public void login(String email, String password) throws Exception {
         Optional<User> byEmail = userRepository.findByEmail(email);
         if(byEmail.isPresent()){
             if(!byEmail.get().getPassword().equals(password)){
