@@ -33,4 +33,9 @@ public class HomeController {
         }
     }
 
+    @GetMapping("/canDonate")
+    public ResponseEntity<String> canDonate(@RequestParam String email){
+        userService.
+    }
+
 }

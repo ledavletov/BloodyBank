@@ -18,6 +18,7 @@ public class User {
     private String surname;
     private String email;
     private String password;
+    private int age;
 
     @ManyToOne
     @JoinColumn(name = "blood_id")

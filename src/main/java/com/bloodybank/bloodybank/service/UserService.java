@@ -26,6 +26,7 @@ public class UserService {
         user.setSurname(dto.surname());
         user.setEmail(dto.email());
         user.setPassword(dto.password());
+        user.setCount(dto.age());
 
         Blood blood = getBloodType(dto.bloodType());
         user.setBlood_type(blood);
@@ -64,5 +65,21 @@ public class UserService {
             return count;
         }
         throw new UserNotFoundException(email);
+    }
+
+    public boolean canDonate(String email) throws UserNotFoundException{
+        Optional<User> byEmail = userRepository.findByEmail(email);
+        if(byEmail.isPresent()){
+            User q = byEmail.get();
+            return isValidAge(q.getAge());
+        }
+        throw new UserNotFoundException(email);
+    }
+
+    private boolean isValidAge(int age){
+       if(age >= 18 && age <= 65){
+           return true;
+       }
+       return false;
     }
 }
