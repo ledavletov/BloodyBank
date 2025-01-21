@@ -34,8 +34,15 @@ public class HomeController {
     }
 
     @GetMapping("/canDonate")
-    public ResponseEntity<String> canDonate(@RequestParam String email){
-        userService.
+    public ResponseEntity<String> canDonate(@PathVariable String email){
+        try {
+            if(userService.canDonate(email)){
+                return ResponseEntity.ok("Age is valid");
+            }
+            return ResponseEntity.badRequest().body("Age is not valid");
+        } catch (UserNotFoundException e) {
+            return ResponseEntity.badRequest().body("User not found");
+        }
     }
 
 }
