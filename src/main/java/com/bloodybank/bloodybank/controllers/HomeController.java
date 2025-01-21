@@ -33,7 +33,7 @@ public class HomeController {
         }
     }
 
-    @GetMapping("/canDonate")
+    @GetMapping("/canDonate/{email}")
     public ResponseEntity<String> canDonate(@PathVariable String email){
         try {
             if(userService.canDonate(email)){
@@ -43,6 +43,19 @@ public class HomeController {
         } catch (UserNotFoundException e) {
             return ResponseEntity.badRequest().body("User not found");
         }
+    }
+
+    @GetMapping("/amountDonations/{email}")
+    public ResponseEntity<String> countDonation(@PathVariable String email){
+        try {
+            if(userService.canDonate(email)){
+                int i = userService.countDonation(email);
+                return ResponseEntity.ok(String.valueOf(i));
+            }
+        } catch (UserNotFoundException e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
+        }
+        return ResponseEntity.badRequest().body("User not found");
     }
 
 }

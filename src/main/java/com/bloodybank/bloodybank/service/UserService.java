@@ -82,4 +82,13 @@ public class UserService {
        }
        return false;
     }
+
+    public int countDonation(String email) throws UserNotFoundException {
+        Optional<User> byEmail = userRepository.findByEmail(email);
+        if(byEmail.isPresent()){
+            User user = byEmail.get();
+            return user.getCount();
+        }
+        throw new UserNotFoundException(email);
+    }
 }
