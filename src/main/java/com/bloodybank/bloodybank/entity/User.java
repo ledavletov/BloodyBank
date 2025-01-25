@@ -1,5 +1,6 @@
 package com.bloodybank.bloodybank.entity;
 
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
@@ -27,6 +28,7 @@ public class User {
 
     private int count;
 
-    @OneToMany(mappedBy = "receiverId", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
+    @OneToMany(mappedBy = "sender", fetch = FetchType.EAGER)
+    @JsonManagedReference
     private List<Transaction> transactions;
 }

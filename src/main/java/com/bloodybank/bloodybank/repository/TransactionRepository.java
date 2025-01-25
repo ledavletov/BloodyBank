@@ -11,8 +11,8 @@ import java.util.Optional;
 public interface TransactionRepository extends JpaRepository<Transaction, Integer> {
     Optional<Transaction> findBySenderId(int id);
 
-    @Query("SELECT t FROM Transaction t WHERE t.bloodType.name = :bloodType")
-    List<Transaction> findByBloodType(@Param("bloodType") String bloodType);
+    @Query("SELECT t FROM Transaction t WHERE t.bloodType.id IN :ids AND t.receiverId=0")
+    List<Transaction> findAllByBloodType(@Param("ids") List<Integer> ids);
 
     Optional<Transaction> findById(int id);
 }

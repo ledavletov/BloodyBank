@@ -2,18 +2,19 @@ package com.bloodybank.bloodybank.service;
 
 
 import com.bloodybank.bloodybank.dto.RegisterDto;
+import com.bloodybank.bloodybank.dto.converter.TransactionConverter;
+import com.bloodybank.bloodybank.dto.converter.UserConverter;
 import com.bloodybank.bloodybank.entity.Blood;
 import com.bloodybank.bloodybank.entity.Transaction;
 import com.bloodybank.bloodybank.entity.User;
-import com.bloodybank.bloodybank.exception.NoSuchBloodType;
-import com.bloodybank.bloodybank.exception.NoTransactionException;
-import com.bloodybank.bloodybank.exception.UserNotFoundException;
-import com.bloodybank.bloodybank.exception.WrongPasswordException;
+import com.bloodybank.bloodybank.exception.*;
 import com.bloodybank.bloodybank.repository.BloodRepository;
 import com.bloodybank.bloodybank.repository.TransactionRepository;
 import com.bloodybank.bloodybank.repository.UserRepository;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
+
+import java.util.ArrayList;
 import java.util.List;
 
 import java.util.Optional;
@@ -21,9 +22,9 @@ import java.util.Optional;
 @Service
 @AllArgsConstructor
 public class UserService {
-    private final TransactionRepository transactionRepository;
     private UserRepository userRepository;
     private BloodRepository bloodRepository;
+    private TransactionRepository transactionRepository;
 
     public void registerUser(RegisterDto dto) throws NoSuchBloodType {
         User user = new User();
@@ -31,7 +32,7 @@ public class UserService {
         user.setSurname(dto.surname());
         user.setEmail(dto.email());
         user.setPassword(dto.password());
-        user.setCount(dto.age());
+        user.setAge(dto.age());
 
         Blood blood = getBloodType(dto.bloodType());
         user.setBlood_type(blood);
@@ -49,21 +50,26 @@ public class UserService {
                 throw new WrongPasswordException();
             }
         }
-        throw new UserNotFoundException(email);
+        else
+            throw new UserNotFoundException(email);
     }
 
     public String getUser(String email) throws UserNotFoundException {
         Optional<User> byEmail = userRepository.findByEmail(email);
         if(byEmail.isPresent()){
-            return byEmail.get().toString();
+            return UserConverter.convert(byEmail.get());
         }
         throw new UserNotFoundException(email);
     }
 
-    public int incrementBloodCount(String email) throws UserNotFoundException {
+    public int donate(String email) throws UserNotFoundException {
         Optional<User> byEmail = userRepository.findByEmail(email);
         if(byEmail.isPresent()){
             User user = byEmail.get();
+            Transaction t = new Transaction();
+            t.setBloodType(user.getBlood_type());
+            t.setSender(user);
+            transactionRepository.save(t);
             int count = user.getCount();
             user.setCount(++count);
             userRepository.save(user);
@@ -82,10 +88,7 @@ public class UserService {
     }
 
     private boolean isValidAge(int age){
-       if(age >= 18 && age <= 65){
-           return true;
-       }
-       return false;
+       return age >= 18 && age <= 65;
     }
 
     public int countDonation(String email) throws UserNotFoundException {
@@ -101,20 +104,50 @@ public class UserService {
         Optional<User> byEmail = userRepository.findByEmail(email);
         if (byEmail.isPresent()){
             User user = byEmail.get();
-            return transactionRepository.findAllByBloodType(user.getBlood_type().getName()).stream().map(TransactionConverter::convert).toList();
+            Blood blood = user.getBlood_type();
+            return transactionRepository.findAllByBloodType(getBloodList(blood)).stream().map(TransactionConverter::convert).toList();
         } else{
             throw new UserNotFoundException(email);
         }
     }
-    public void extractBlood(String id, int userId) {
+
+    public void extractBlood(String id, int userId) throws Exception {
         int bloodId = Integer.parseInt(id);
         Optional<Transaction> t = transactionRepository.findById(bloodId);
         if(t.isPresent()){
             Transaction transaction = t.get();
+            if (transaction.getReceiverId() != 0)
+                throw new TransactionException("There is already a receiver with this id");
             transaction.setReceiverId(userId);
             transactionRepository.save(transaction);
         }
-        throw new NoTransactionException(String.valueOf(id));
+        else
+            throw new NoTransactionException(String.valueOf(id));
+    }
+
+    private List<Integer> getBloodList(Blood type){
+        int bloodId = type.getId();
+        List<Integer> bloods = new ArrayList<>();
+        switch (bloodId){
+            case 1: 
+                bloods.add(1); 
+                bloods.add(3);
+                break;
+            case 2:
+                bloods.add(2);
+                bloods.add(3);
+                break;
+            case 3:
+                bloods.add(3);
+                break; 
+            case 4:
+                bloods.add(4);
+                bloods.add(3);
+                bloods.add(2);
+                bloods.add(1);
+                break;
+        }
+        return bloods;
     }
 
 }

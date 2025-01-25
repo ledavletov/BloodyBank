@@ -1,6 +1,7 @@
 package com.bloodybank.bloodybank.controllers;
 
 import com.bloodybank.bloodybank.dto.SimpleDto;
+import com.bloodybank.bloodybank.exception.NoTransactionException;
 import com.bloodybank.bloodybank.exception.UserNotFoundException;
 import com.bloodybank.bloodybank.service.UserService;
 import lombok.AllArgsConstructor;
@@ -27,7 +28,7 @@ public class HomeController {
     @GetMapping("/donate/{email}")
     public ResponseEntity<String> donate(@PathVariable String email){
         try {
-            int i = userService.incrementBloodCount(email);
+            int i = userService.donate(email);
             return ResponseEntity.ok(String.valueOf(i));
         } catch (UserNotFoundException e) {
             return ResponseEntity.badRequest().body(e.getMessage());
@@ -53,10 +54,10 @@ public class HomeController {
                 int i = userService.countDonation(email);
                 return ResponseEntity.ok(String.valueOf(i));
             }
+            return ResponseEntity.badRequest().body("Your age is not valid");
         } catch (UserNotFoundException e) {
-            return ResponseEntity.badRequest().body(e.getMessage());
+            return ResponseEntity.badRequest().body("User not found");
         }
-        return ResponseEntity.badRequest().body("User not found");
     }
 
     @GetMapping("/getBlood/{email}")
@@ -69,8 +70,13 @@ public class HomeController {
     }
 
     @PostMapping("/extract/{id}")
-    public ResponseEntity<String> extract(@RequestParam SimpleDto dto, @PathVariable String id){
-        userService.extractBlood(id, dto.userId());
+    public ResponseEntity<String> extract(@RequestBody SimpleDto dto, @PathVariable String id){
+        try {
+            userService.extractBlood(id, dto.userId());
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
+        }
+        return ResponseEntity.ok("Extracted");
     }
 
 }
