@@ -8,6 +8,8 @@ import lombok.AllArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 @RestController
 @RequestMapping("/home")
 @AllArgsConstructor
@@ -77,6 +79,11 @@ public class HomeController {
             return ResponseEntity.badRequest().body(e.getMessage());
         }
         return ResponseEntity.ok("Extracted");
+    }
+
+    @GetMapping("/allBloods")
+    public ResponseEntity<List<String>> allBloods(){
+        return ResponseEntity.ok(userService.extractAllBlood());
     }
 
 }

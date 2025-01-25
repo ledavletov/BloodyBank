@@ -9,6 +9,7 @@ import java.util.List;
 import java.util.Optional;
 
 public interface TransactionRepository extends JpaRepository<Transaction, Integer> {
+
     Optional<Transaction> findBySenderId(int id);
 
     @Query("SELECT t FROM Transaction t WHERE t.bloodType.id IN :ids AND t.receiverId=0")

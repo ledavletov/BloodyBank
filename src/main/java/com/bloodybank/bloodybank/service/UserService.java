@@ -150,4 +150,12 @@ public class UserService {
         return bloods;
     }
 
+    public List<String> extractAllBlood() {
+        List<Transaction> all = transactionRepository.findAll();
+        List<String> bloods = new ArrayList<>();
+        for (Transaction t : all) {
+            bloods.add(TransactionConverter.convert(t));
+        }
+        return bloods;
+    }
 }
