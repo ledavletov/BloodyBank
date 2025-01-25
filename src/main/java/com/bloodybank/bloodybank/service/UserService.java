@@ -3,20 +3,25 @@ package com.bloodybank.bloodybank.service;
 
 import com.bloodybank.bloodybank.dto.RegisterDto;
 import com.bloodybank.bloodybank.entity.Blood;
+import com.bloodybank.bloodybank.entity.Transaction;
 import com.bloodybank.bloodybank.entity.User;
 import com.bloodybank.bloodybank.exception.NoSuchBloodType;
+import com.bloodybank.bloodybank.exception.NoTransactionException;
 import com.bloodybank.bloodybank.exception.UserNotFoundException;
 import com.bloodybank.bloodybank.exception.WrongPasswordException;
 import com.bloodybank.bloodybank.repository.BloodRepository;
+import com.bloodybank.bloodybank.repository.TransactionRepository;
 import com.bloodybank.bloodybank.repository.UserRepository;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
+import java.util.List;
 
 import java.util.Optional;
 
 @Service
 @AllArgsConstructor
 public class UserService {
+    private final TransactionRepository transactionRepository;
     private UserRepository userRepository;
     private BloodRepository bloodRepository;
 
@@ -91,4 +96,25 @@ public class UserService {
         }
         throw new UserNotFoundException(email);
     }
+
+    public List<String> getBlood(String email) throws UserNotFoundException {
+        Optional<User> byEmail = userRepository.findByEmail(email);
+        if (byEmail.isPresent()){
+            User user = byEmail.get();
+            return transactionRepository.findAllByBloodType(user.getBlood_type().getName()).stream().map(TransactionConverter::convert).toList();
+        } else{
+            throw new UserNotFoundException(email);
+        }
+    }
+    public void extractBlood(String id, int userId) {
+        int bloodId = Integer.parseInt(id);
+        Optional<Transaction> t = transactionRepository.findById(bloodId);
+        if(t.isPresent()){
+            Transaction transaction = t.get();
+            transaction.setReceiverId(userId);
+            transactionRepository.save(transaction);
+        }
+        throw new NoTransactionException(String.valueOf(id));
+    }
+
 }

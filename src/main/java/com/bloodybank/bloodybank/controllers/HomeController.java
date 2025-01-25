@@ -1,5 +1,6 @@
 package com.bloodybank.bloodybank.controllers;
 
+import com.bloodybank.bloodybank.dto.SimpleDto;
 import com.bloodybank.bloodybank.exception.UserNotFoundException;
 import com.bloodybank.bloodybank.service.UserService;
 import lombok.AllArgsConstructor;
@@ -56,6 +57,20 @@ public class HomeController {
             return ResponseEntity.badRequest().body(e.getMessage());
         }
         return ResponseEntity.badRequest().body("User not found");
+    }
+
+    @GetMapping("/getBlood/{email}")
+    public ResponseEntity getBlood(@PathVariable String email){
+        try{
+            return ResponseEntity.ok(userService.getBlood(email));
+        }catch(UserNotFoundException e){
+            return ResponseEntity.badRequest().body(e.getMessage());
+        }
+    }
+
+    @PostMapping("/extract/{id}")
+    public ResponseEntity<String> extract(@RequestParam SimpleDto dto, @PathVariable String id){
+        userService.extractBlood(id, dto.userId());
     }
 
 }

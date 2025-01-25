@@ -15,4 +15,7 @@ public class Blood {
 
     @OneToMany(mappedBy = "blood_type", cascade = jakarta.persistence.CascadeType.ALL)
     private List<User> users;
+
+    @OneToMany(mappedBy = "bloodType", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
+    private List<Transaction> transactions;
 }

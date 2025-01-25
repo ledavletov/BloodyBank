@@ -3,6 +3,7 @@ package com.bloodybank.bloodybank.entity;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
+import java.util.List;
 
 @Entity
 @Setter
@@ -25,4 +26,7 @@ public class User {
     private Blood blood_type;
 
     private int count;
+
+    @OneToMany(mappedBy = "receiverId", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
+    private List<Transaction> transactions;
 }
