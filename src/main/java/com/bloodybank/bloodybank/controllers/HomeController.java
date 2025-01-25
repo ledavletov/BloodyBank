@@ -32,7 +32,7 @@ public class HomeController {
         try {
             int i = userService.donate(email);
             return ResponseEntity.ok(String.valueOf(i));
-        } catch (UserNotFoundException e) {
+        } catch (Exception e) {
             return ResponseEntity.badRequest().body(e.getMessage());
         }
     }

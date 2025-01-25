@@ -62,10 +62,12 @@ public class UserService {
         throw new UserNotFoundException(email);
     }
 
-    public int donate(String email) throws UserNotFoundException {
+    public int donate(String email) throws Exception {
         Optional<User> byEmail = userRepository.findByEmail(email);
         if(byEmail.isPresent()){
             User user = byEmail.get();
+            if (!canDonate(user.getEmail()))
+                throw new Exception("Age is not valid");
             Transaction t = new Transaction();
             t.setBloodType(user.getBlood_type());
             t.setSender(user);
