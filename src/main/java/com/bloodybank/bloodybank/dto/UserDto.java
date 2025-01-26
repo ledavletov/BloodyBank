@@ -38,6 +38,10 @@ public class UserDto {
         return bloodCount;
     }
 
+    public int getId() {
+        return id;
+    }
+
     public UserDto(String email, String name, String surname, int age, String bloodName, int bloodId, int bloodCount, int id) {
         this.email = email;
         this.name = name;

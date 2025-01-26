@@ -71,10 +71,10 @@ public class HomeController {
         }
     }
 
-    @PostMapping("/extract/{id}")
-    public ResponseEntity<String> extract(@RequestBody SimpleDto dto, @PathVariable String id){
+    @PostMapping("/extract/{id}/{userId}")
+    public ResponseEntity<String> extract(@PathVariable int userId, @PathVariable String id){
         try {
-            userService.extractBlood(id, dto.userId());
+            userService.extractBlood(id, userId);
         } catch (Exception e) {
             return ResponseEntity.badRequest().body(e.getMessage());
         }
