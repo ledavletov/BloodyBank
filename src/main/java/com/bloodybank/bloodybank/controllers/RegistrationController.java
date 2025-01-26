@@ -28,8 +28,8 @@ public class RegistrationController {
     @PostMapping("/login")
     public ResponseEntity<String> login(@RequestBody LoginDto dto){
         try {
-            userService.login(dto.email(), dto.password());
-            return ResponseEntity.ok("Logged in");
+            String userDto = userService.login(dto.email(), dto.password());
+            return ResponseEntity.ok(userDto);
         } catch (Exception e) {
             return ResponseEntity.badRequest().body(e.getMessage());
         }

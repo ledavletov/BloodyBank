@@ -2,6 +2,7 @@ package com.bloodybank.bloodybank.service;
 
 
 import com.bloodybank.bloodybank.dto.RegisterDto;
+import com.bloodybank.bloodybank.dto.UserDto;
 import com.bloodybank.bloodybank.dto.converter.TransactionConverter;
 import com.bloodybank.bloodybank.dto.converter.UserConverter;
 import com.bloodybank.bloodybank.entity.Blood;
@@ -11,6 +12,7 @@ import com.bloodybank.bloodybank.exception.*;
 import com.bloodybank.bloodybank.repository.BloodRepository;
 import com.bloodybank.bloodybank.repository.TransactionRepository;
 import com.bloodybank.bloodybank.repository.UserRepository;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -25,6 +27,7 @@ public class UserService {
     private UserRepository userRepository;
     private BloodRepository bloodRepository;
     private TransactionRepository transactionRepository;
+    private  ObjectMapper objectMapper;
 
     public void registerUser(RegisterDto dto) throws NoSuchBloodType {
         User user = new User();
@@ -43,12 +46,16 @@ public class UserService {
         return bloodRepository.findByName(name).orElseThrow(() -> new NoSuchBloodType("There is no such blood type as " + name));
     }
 
-    public void login(String email, String password) throws Exception {
+    public String login(String email, String password) throws Exception {
         Optional<User> byEmail = userRepository.findByEmail(email);
         if(byEmail.isPresent()){
-            if(!byEmail.get().getPassword().equals(password)){
+            User user = byEmail.get();
+            if(!user.getPassword().equals(password)){
                 throw new WrongPasswordException();
             }
+            UserDto dto = new UserDto(user.getEmail(), user.getName(), user.getPassword(),
+                    user.getAge(), user.getBlood_type().getName(), user.getBlood_type().getId());
+            return objectMapper.writeValueAsString(dto);
         }
         else
             throw new UserNotFoundException(email);
