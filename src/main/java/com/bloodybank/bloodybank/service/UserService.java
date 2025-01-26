@@ -53,7 +53,7 @@ public class UserService {
             if(!user.getPassword().equals(password)){
                 throw new WrongPasswordException();
             }
-            UserDto dto = new UserDto(user.getEmail(), user.getName(), user.getPassword(),
+            UserDto dto = new UserDto(user.getEmail(), user.getName(), user.getSurname(),
                     user.getAge(), user.getBlood_type().getName(), user.getBlood_type().getId());
             return objectMapper.writeValueAsString(dto);
         }
