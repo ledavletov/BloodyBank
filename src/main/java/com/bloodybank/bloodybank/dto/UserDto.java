@@ -7,6 +7,7 @@ public class UserDto {
     private int age;
     private String bloodName;
     private int bloodId;
+    private int bloodCount;
 
     public String getEmail() {
         return email;
@@ -32,12 +33,17 @@ public class UserDto {
         return bloodId;
     }
 
-    public UserDto(String email, String name, String surname, int age, String bloodName, int bloodId) {
+    public int getBloodCount() {
+        return bloodCount;
+    }
+
+    public UserDto(String email, String name, String surname, int age, String bloodName, int bloodId, int bloodCount) {
         this.email = email;
         this.name = name;
         this.surname = surname;
         this.age = age;
         this.bloodName = bloodName;
         this.bloodId = bloodId;
+        this.bloodCount = bloodCount;
     }
 }
